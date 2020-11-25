@@ -1,4 +1,5 @@
 from Spot import Spot
+import output
 
 FILENAME = "input.txt"
 
@@ -76,10 +77,23 @@ def main():
     f = open(FILENAME, "r")
     width, height, num_of_robots, robots, goal, obstacles = getInput(f)
     spots = getSpots(width, height, robots, obstacles, goal)
+
+    obstacleArr = []
+    goal = None
+    rob = []
     
     for spot in spots:
+        if spot.is_obstacle:
+            obstacleArr.append((spot.x, height-1-spot.y))
+        elif spot.is_goal:
+            goal = (spot.x, spot.y)
+        elif spot.is_robot:
+            rob.append((spot.x, spot.y))
         spot.update_neighbours(spots)
         #spot.get_neighbours() # For testing
+    
+    arr = [[(1,2), (2,2), (3,2), (4,2), (5,2), (6,2), (7,2), (7,3), (7,4)], [(2,8), (3,8), (4,8), (5,8), (6,8), (6,7), (7,7), (7,6), (7,5), (7,4)]]
+    output.drawBoard(height, width, arr, obstacleArr, goal, rob)
 
     algorithm()
 
