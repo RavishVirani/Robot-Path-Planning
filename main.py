@@ -1,5 +1,6 @@
 from Spot import Spot
 import output
+from path_finding import manhattan, A_star
 
 FILENAME = "input.txt"
 
@@ -92,10 +93,44 @@ def main():
         spot.update_neighbours(spots)
         #spot.get_neighbours() # For testing
     
-    arr = [[(1,2), (2,2), (3,2), (4,2), (5,2), (6,2), (7,2), (7,3), (7,4)], [(2,8), (3,8), (4,8), (5,8), (6,8), (6,7), (7,7), (7,6), (7,5), (7,4)]]
-    output.drawBoard(height, width, arr, obstacleArr, goal, rob)
+    arr = []
+    cost_map = []
+    #Calculate all the manhattan distances of each spot
+    for i in range(height-1,-1,-1):
+        temp = []
+        for n in range(width):
+            if spots[n*height+i].is_obstacle:
+                temp.append(-1)
+            else:
+                temp.append(manhattan((spots[n*height+i].x,spots[n*height+i].y))(goal))
+        cost_map.append(temp)
+    
+    #Order the robots from closest to farthest
+    robots = sorted(robots,key = manhattan(goal))
+    
+    #Find the paths of each robot
+    for i in range(num_of_robots):
+        path = A_star(robots[i],cost_map,goal,arr)
+        if path is None:
+            print("The room is impossible to navigate! Robot at {} is stuck!".format(robots[i]))
+            print("Continue for the other robots")
+            #break
+        else:        
+            arr.append(path)
+    
+    #Restate the goal and robots. They are y-inverted.
+    goal = (goal[0],height - int(goal[1]) - 1)
+    for i in range(len(rob)):
+        rob[i] = (rob[i][0],height - rob[i][1] - 1)
+            
+    #Restate the paths for the draw method. Draw method takes (y,x) coordinates
+    for i in range(len(arr)):
+        temp = []
+        for n in range(len(arr[i])):
+            temp.append((height - arr[i][n][1] - 1,arr[i][n][0]))
+        arr[i] = temp
 
-    algorithm()
+    output.drawBoard(height, width, arr, obstacleArr, goal, rob)
 
 # Run the main function
 main()
