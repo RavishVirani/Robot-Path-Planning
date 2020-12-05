@@ -1,6 +1,7 @@
 from queue import PriorityQueue
 
 def manhattan(goal):
+    #Determines the Manhattan Distance between two points
     def other(coor):
         x = abs(coor[0]-goal[0])
         y = abs(coor[1]-goal[1])
@@ -8,6 +9,7 @@ def manhattan(goal):
     return other
 
 class Node:
+    #Object used for the A_Star Algorithm
     def __init__(self,actualCost,coord,parent,hCost):
         self.actualCost = actualCost
         self.coord = coord
@@ -21,6 +23,8 @@ class Node:
         return self.coord == goal
     
 def binary_search(item,array):
+    #If the item is in the array, returns the index of the item
+    #If the item is NOT in the array, returns the index where the item SHOULD be if inserted in the array
     start = 0
     end = len(array)-1
     while start<=end:
@@ -36,25 +40,24 @@ def binary_search(item,array):
 def A_star(robot,room,goal,paths):
     print("Current Robot is ",robot)
     q = PriorityQueue()
+    
     visited = []
     for i in range(len(room[0])):
         visited.append([])
+
+    #Add the first node of the algorithm
     q.put(Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]))
     current=None
     
     while not q.empty():
         current = q.get()
-        count+=1
         temp = None
-        #Add nodes of (cost,location)
+        
         if current.is_goal((goal[0],goal[1])):
-            #Do things
-            break #return
-        ##Should we check if the current node is in other paths?
-        ##Or is it better to do time check later
-
+            break
         else:
-            #Check parent node as well?
+            #For each adjacent spot, check that it is within the grid and not a wall. Then check if that node has been visited before.
+            #If the empty spot has not been visited, add it to the priority queue
             #Check the up spot
             if current.coord[1]<len(room)-1 and room[len(room)-current.coord[1]-1-1][current.coord[0]]!=-1:
                 temp = binary_search((current.coord[0],current.coord[1]+1),visited[current.coord[0]])                
@@ -80,15 +83,15 @@ def A_star(robot,room,goal,paths):
                 if len(visited[current.coord[0]-1])==temp or visited[current.coord[0]-1][temp]!=(current.coord[0]-1,current.coord[1]):
                     q.put(Node(current.actualCost+1,(current.coord[0]-1,current.coord[1]),current,room[len(room)-current.coord[1]-1][current.coord[0]-1]))
             
+            #Add the current node to the list of visited spots
             temp = binary_search(current.coord,visited[current.coord[0]])            
             visited[current.coord[0]].insert(temp,current.coord)
-    #Not sure
-    #Cannot find a path
+    
+    #Return None if no path can be found
     if q.empty() and not current.is_goal((goal[0],goal[1])):
-        #print("Impossible Puzzle")
         return None
     
-    #Construct an array for the path
+    #Reonstruct the path in an array
     current_path = []
     while current is not None:
         current_path.insert(0,current.coord)
@@ -114,6 +117,7 @@ def A_star(robot,room,goal,paths):
                         #Check for another path for the robot it is in conflict with
                         actual_path = paths.pop(n)
                         temp_other = A_star(actual_path[0],room,goal,paths)
+                        
                         if temp_other is None or len(temp_other)>len(actual_path):
                             current_path.insert(i,current_path[i-1])
                             print("No other satisfying paths. Just wait once")
@@ -127,7 +131,6 @@ def A_star(robot,room,goal,paths):
                         current_path = temp_current
                         #i=0
                         
-                    room[temp_index[0]][temp_index[1]] = temp_value
-                    
+                    room[temp_index[0]][temp_index[1]] = temp_value                    
         i+=1
     return current_path      
