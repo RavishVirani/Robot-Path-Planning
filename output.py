@@ -17,6 +17,15 @@ OFFSET = 5
 # Credit for robot image goes to:
 # "Designed by pch.vector / Freepik"
 
+def keyDown(key,index,max_length):
+    if key == pygame.K_LEFT:
+        if index>0:
+            index = index-1
+    elif key == pygame.K_RIGHT:
+        if index<max_length-1:
+            index = index + 1
+    return index
+
 def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
     global SCREEN, CLOCK
     pygame.init()
@@ -35,33 +44,13 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
     image = pygame.image.load(r'robot.jpg')
     image = pygame.transform.scale(image, (squareWidth, squareHeight))
 
-
-    # Draw all the squares
-    for i in range(boardWidth):
-        for j in range(boardHeight):
-            rect = pygame.Rect(i*squareWidth, j*squareHeight, squareWidth, squareHeight)
-            # If its an obstical colour the square RED
-            if ((i,j) in obsticalArr):
-                pygame.draw.rect(SCREEN, RED, rect)
-                pygame.draw.rect(SCREEN, WHITE, rect, 1)
-                rectangles.append((rect, RED))
-            # If its the goal, colour the square GOLD
-            elif (i,j) == goal:
-                pygame.draw.rect(SCREEN, GOLD, rect)
-                pygame.draw.rect(SCREEN, WHITE, rect, 1)
-                rectangles.append((rect, GOLD))
-            # If its a start point for a robot, draw the ROBOT
-            elif (i,j) in rob:
-                SCREEN.blit(image, (i*squareWidth, j*squareHeight))
-                pygame.draw.rect(SCREEN, WHITE, rect, 1)
-                rectangles.append((rect, WHITE))
-            # Otherwise draw an outline of a square with a BLACK background
-            else:
-                pygame.draw.rect(SCREEN, WHITE, rect, 1)
-                rectangles.append((rect, WHITE))
-    
-    # Draw the paths for robots
-    drawPath(boardHeight, boardWidth, pathArr, rectangles)
+    index = 0
+    max_index = 0
+    for path in pathArr:
+        if path is None:
+            continue
+        if len(path)>max_index:
+            max_index = len(path)
     
     # Handler for when user exits the program
     while True: 
@@ -70,7 +59,43 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
                 pygame.quit()
                 print("Exiting Output")
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                index = keyDown(event.key,index,max_index)
+        rectangles = []
 
+
+        # Draw all the squares
+        for i in range(boardWidth):
+            for j in range(boardHeight):
+                rect = pygame.Rect(i*squareWidth, j*squareHeight, squareWidth, squareHeight)
+                # If its an obstical colour the square RED
+                if ((i,j) in obsticalArr):
+                    pygame.draw.rect(SCREEN, RED, rect)
+                    pygame.draw.rect(SCREEN, WHITE, rect, 1)
+                    rectangles.append((rect, RED))
+                # If its the goal, colour the square GOLD
+                elif (i,j) == goal:
+                    pygame.draw.rect(SCREEN, GOLD, rect)
+                    pygame.draw.rect(SCREEN, WHITE, rect, 1)
+                    rectangles.append((rect, GOLD))
+                # Otherwise draw an outline of a square with a BLACK background
+                else:
+                    pygame.draw.rect(SCREEN, BLACK, rect)                    
+                    pygame.draw.rect(SCREEN, WHITE, rect, 1)
+                    rectangles.append((rect, WHITE))
+        
+        # Draw the paths for robots
+        drawPath(boardHeight, boardWidth, pathArr, rectangles)
+        for path in pathArr:
+            if path is None:
+                continue
+            # If its a robot, draw the ROBOT            
+            if len(path)>index:
+                i = path[index][1]
+                j = path[index][0]
+                SCREEN.blit(image, (i*squareWidth, j*squareHeight))
+                pygame.draw.rect(SCREEN, WHITE, rect, 1)
+                rectangles.append((rect, WHITE))
         pygame.display.update()
 
 # Draw the paths for robots using different colours
