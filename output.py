@@ -46,11 +46,16 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
 
     index = 0
     max_index = 0
+    pathed_robots = []
     for path in pathArr:
         if path is None:
             continue
+        pathed_robots.append(path[0])
         if len(path)>max_index:
             max_index = len(path)
+    for i in range(len(rob)):
+        if (rob[i][1],rob[i][0]) not in pathed_robots:
+            pathArr.append([(rob[i][1],rob[i][0])]*max_index)
     
     # Handler for when user exits the program
     while True: 
