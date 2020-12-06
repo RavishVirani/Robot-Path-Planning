@@ -48,6 +48,7 @@ def A_star(robot,room,goal,paths):
         in_priority.append([])
 
     #Add the first node of the algorithm
+    in_priority[robot[0]].append((robot[0],robot[1])) 
     q.put((Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]),0))    
     #q.put(Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]))
     
