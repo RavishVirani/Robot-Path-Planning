@@ -42,47 +42,71 @@ def A_star(robot,room,goal,paths):
     q = PriorityQueue()
     
     visited = []
+    in_priority = []
     for i in range(len(room[0])):
         visited.append([])
+        in_priority.append([])
 
     #Add the first node of the algorithm
-    q.put(Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]))
+    q.put((Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]),0))    
+    #q.put(Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]))
+    count = 1000000000000000000000000000
     current=None
     
     while not q.empty():
-        current = q.get()
+        #current = q.get()
+        current = q.get()[0]
+        count-=1
         temp = None
         
         if current.is_goal((goal[0],goal[1])):
             break
         else:
+            temp = binary_search(current.coord,in_priority[current.coord[0]])
+            in_priority[current.coord[0]].pop(temp)            
+                        
             #For each adjacent spot, check that it is within the grid and not a wall. Then check if that node has been visited before.
             #If the empty spot has not been visited, add it to the priority queue
             #Check the up spot
             if current.coord[1]<len(room)-1 and room[len(room)-current.coord[1]-1-1][current.coord[0]]!=-1:
                 temp = binary_search((current.coord[0],current.coord[1]+1),visited[current.coord[0]])                
-                if len(visited[current.coord[0]])==temp or visited[current.coord[0]][temp]!=(current.coord[0],current.coord[1]+1):                    
-                    q.put(Node(current.actualCost+1,(current.coord[0],current.coord[1]+1),current,room[len(room)-current.coord[1]-1-1][current.coord[0]]))
+                if len(visited[current.coord[0]])==temp or visited[current.coord[0]][temp]!=(current.coord[0],current.coord[1]+1):    
+                    temp = binary_search((current.coord[0],current.coord[1]+1),in_priority[current.coord[0]])
+                    if len(in_priority[current.coord[0]])==temp or in_priority[current.coord[0]][temp]!=(current.coord[0],current.coord[1]+1):
+                        in_priority[current.coord[0]].insert(temp,(current.coord[0],current.coord[1]+1))                                
+                        #q.put(Node(current.actualCost+1,(current.coord[0],current.coord[1]+1),current,room[len(room)-current.coord[1]-1-1][current.coord[0]]))
+                        q.put((Node(current.actualCost+1,(current.coord[0],current.coord[1]+1),current,room[len(room)-current.coord[1]-1-1][current.coord[0]]),count))
 
             #Check the Right spot
             if current.coord[0]<len(room[0])-1 and room[len(room)-current.coord[1]-1][current.coord[0]+1]!=-1:
                 temp = binary_search((current.coord[0]+1,current.coord[1]),visited[current.coord[0]+1])
                 if len(visited[current.coord[0]+1])==temp or visited[current.coord[0]+1][temp]!=(current.coord[0]+1,current.coord[1]): 
-                    q.put(Node(current.actualCost+1,(current.coord[0]+1,current.coord[1]),current,room[len(room)-current.coord[1]-1][current.coord[0]+1]))
-                    
+                    temp = binary_search((current.coord[0]+1,current.coord[1]),in_priority[current.coord[0]+1])
+                    if len(in_priority[current.coord[0]+1])==temp or in_priority[current.coord[0]+1][temp]!=(current.coord[0]+1,current.coord[1]):
+                        in_priority[current.coord[0]+1].insert(temp,(current.coord[0]+1,current.coord[1]))
+                        #q.put(Node(current.actualCost+1,(current.coord[0]+1,current.coord[1]),current,room[len(room)-current.coord[1]-1][current.coord[0]+1]))
+                        q.put((Node(current.actualCost+1,(current.coord[0]+1,current.coord[1]),current,room[len(room)-current.coord[1]-1][current.coord[0]+1]),count))
+
             #Check the Down spot
             if current.coord[1]>0 and room[len(room)-current.coord[1]-1+1][current.coord[0]]!=-1:
                 temp = binary_search((current.coord[0],current.coord[1]-1),visited[current.coord[0]])
-                if len(visited[current.coord[0]])==temp or visited[current.coord[0]][temp]!=(current.coord[0],current.coord[1]-1):                    
-                    q.put(Node(current.actualCost+1,(current.coord[0],current.coord[1]-1),current,room[len(room)-current.coord[1]-1+1][current.coord[0]]))
-                    #temp = binary_search(current.coord,visited[current.coord[0]]) <- Why this here?
+                if len(visited[current.coord[0]])==temp or visited[current.coord[0]][temp]!=(current.coord[0],current.coord[1]-1): 
+                    temp = binary_search((current.coord[0],current.coord[1]-1),in_priority[current.coord[0]])
+                    if len(in_priority[current.coord[0]])==temp or in_priority[current.coord[0]][temp]!=(current.coord[0],current.coord[1]-1):
+                        in_priority[current.coord[0]].insert(temp,(current.coord[0],current.coord[1]-1))
+                        #q.put(Node(current.actualCost+1,(current.coord[0],current.coord[1]-1),current,room[len(room)-current.coord[1]-1+1][current.coord[0]]))
+                        q.put((Node(current.actualCost+1,(current.coord[0],current.coord[1]-1),current,room[len(room)-current.coord[1]-1+1][current.coord[0]]),count))
             
             #Check the Left spot
             if current.coord[0]>0 and room[len(room)-current.coord[1]-1][current.coord[0]-1]!=-1:
                 temp = binary_search((current.coord[0]-1,current.coord[1]),visited[current.coord[0]-1])
                 if len(visited[current.coord[0]-1])==temp or visited[current.coord[0]-1][temp]!=(current.coord[0]-1,current.coord[1]):
-                    q.put(Node(current.actualCost+1,(current.coord[0]-1,current.coord[1]),current,room[len(room)-current.coord[1]-1][current.coord[0]-1]))
-            
+                    temp = binary_search((current.coord[0]-1,current.coord[1]),in_priority[current.coord[0]-1])
+                    if len(in_priority[current.coord[0]-1])==temp or in_priority[current.coord[0]-1][temp]!=(current.coord[0]-1,current.coord[1]):
+                        in_priority[current.coord[0]-1].insert(temp,(current.coord[0]-1,current.coord[1]))
+                        #q.put(Node(current.actualCost+1,(current.coord[0]-1,current.coord[1]),current,room[len(room)-current.coord[1]-1][current.coord[0]-1]))
+                        q.put((Node(current.actualCost+1,(current.coord[0]-1,current.coord[1]),current,room[len(room)-current.coord[1]-1][current.coord[0]-1]),count))
+
             #Add the current node to the list of visited spots
             temp = binary_search(current.coord,visited[current.coord[0]])            
             visited[current.coord[0]].insert(temp,current.coord)
@@ -129,7 +153,7 @@ def A_star(robot,room,goal,paths):
                     else:
                         print("Another current path found")
                         current_path = temp_current
-                        #i=0
+                        i=1
                         
                     room[temp_index[0]][temp_index[1]] = temp_value                    
         i+=1
