@@ -26,6 +26,108 @@ def keyDown(key,index,max_length):
             index = index + 1
     return index
 
+def bigKeyDown(key,index,robot_index,max_length,num_robots):
+    if key == pygame.K_LEFT:
+        if index > 0:
+            index = index - 1
+    elif key == pygame.K_RIGHT:
+        if index < max_length-1:
+            index = index + 1
+    elif key == pygame.K_DOWN:
+        if robot_index > 0:
+            robot_index = robot_index - 1
+    elif key == pygame.K_UP:
+        if robot_index < num_robots - 1:
+            robot_index = robot_index + 1
+    return index,robot_index
+
+
+def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
+    global SCREEN, CLOCK
+    pygame.init()
+    SCREEN = pygame.display.set_mode((HEIGHT, WIDTH))
+    CLOCK = pygame.time.Clock()
+    SCREEN.fill(BLACK)
+    offset = 20            
+
+
+    squareWidth = WIDTH // (offset*2)
+    squareHeight = HEIGHT // (offset*2)
+
+    image = pygame.image.load(r'robot.jpg')
+    image = pygame.transform.scale(image, (squareWidth, squareHeight))
+
+    
+    robot_index = 0
+    index = 0
+    max_index = 0
+    num_bots = len(paths)
+    for path in paths:
+        if len(path)>max_index:
+            max_index = len(path)
+            
+    #If the robot has no paths, then make it "stay still"
+    for i in range(len(paths)):
+        if len(paths[i])==1 and paths[i][0]!=(goal[1],goal[0]):
+            paths[i] = paths[i]*max_index
+
+    
+
+
+    while True: 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                print("Exiting Output")
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                index, robot_index=bigKeyDown(event.key,index,robot_index,max_index,num_bots)
+        if len(paths[robot_index])<=index:
+            x = goal[0]
+            y = goal[1]
+        else:
+            x = paths[robot_index][index][1]
+            y = paths[robot_index][index][0]
+        
+        for i in range(-offset,offset,1):
+            for n in range(-offset,offset,1):
+                rect = pygame.Rect((n+offset)*squareWidth, (i+offset)*squareHeight, squareWidth, squareHeight)
+                
+                if i == 0  and n == 0:
+                    #print("robot")
+                    SCREEN.blit(image, (offset*squareWidth, offset*squareHeight))                
+                elif y+i<0 or y+i>=boardHeight:
+                    pygame.draw.rect(SCREEN, WHITE, rect)
+                    
+                    #print("y axis balck")
+                elif x+n<0 or x+n>=boardWidth:
+                    pygame.draw.rect(SCREEN, WHITE, rect)
+                    
+                    #print("x axis black")
+                elif board[y+i][x+n]==-1:
+                    pygame.draw.rect(SCREEN, RED, rect)
+                    pygame.draw.rect(SCREEN, WHITE, rect, 1)
+
+                    #print("obstacle")
+                elif board[y+i][x+n]==0:
+                    #print("goal")
+                    pygame.draw.rect(SCREEN, GOLD, rect)
+                    pygame.draw.rect(SCREEN, WHITE, rect, 1)                
+                else:
+                    #print("blank")
+                    pygame.draw.rect(SCREEN, BLACK, rect)                    
+                    pygame.draw.rect(SCREEN, WHITE, rect, 1)
+        #Other bots
+        for i in range(len(paths)):
+            if i == robot_index or len(paths[i])<=index:
+                continue
+            other_x = paths[i][index][1]
+            other_y = paths[i][index][0]
+            if abs(x-other_x)<offset and abs(y-other_y)<offset:
+                SCREEN.blit(image, ((other_x-x+offset)*squareWidth, (other_y-y+offset)*squareHeight))
+                
+        pygame.display.update()
+
 def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
     global SCREEN, CLOCK
     pygame.init()
