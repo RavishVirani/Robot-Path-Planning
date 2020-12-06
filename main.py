@@ -118,19 +118,28 @@ def main():
             #break
         else:        
             arr.append(path)
+            
+    #Restate the paths for the draw method. Draw method takes (y,x) coordinates
+    total = 0
+    for i in range(len(arr)):
+        if len(arr[i])==1:
+            if arr[i][0][0]==goal[0] and arr[i][0][1]==goal[1]:
+                print("Robot at {} has a path of cost:".format(robots[i]),0)
+            else:
+                print("Robot at {} cannot reach the goal".format(robots[i]))
+        else:
+            total+=len(arr[i])-1
+            print("Robot at {} has a path of cost:".format(robots[i]),(len(arr[i])-1))            
+        temp = []
+        for n in range(len(arr[i])):
+            temp.append((height - arr[i][n][1] - 1,arr[i][n][0]))
+        arr[i] = temp
+    print("The cost of all the paths is:",total)
     
     #Restate the goal and robots. They are y-inverted.
     goal = (goal[0],height - int(goal[1]) - 1)
     for i in range(len(rob)):
         rob[i] = (rob[i][0],height - rob[i][1] - 1)
-            
-    #Restate the paths for the draw method. Draw method takes (y,x) coordinates
-    for i in range(len(arr)):
-        temp = []
-        for n in range(len(arr[i])):
-            temp.append((height - arr[i][n][1] - 1,arr[i][n][0]))
-        arr[i] = temp
-
     output.drawBoard(height, width, arr, obstacleArr, goal, rob)
 
 # Run the main function
