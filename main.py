@@ -114,6 +114,7 @@ def main():
         if path is None:
             print("The room is impossible to navigate! Robot at {} is stuck!".format(robots[i]))
             print("Continue for the other robots")
+            arr.append([(robots[i][0],robots[i][1])])
             #break
         else:        
             arr.append(path)
