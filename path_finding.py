@@ -52,13 +52,18 @@ def A_star(robot,room,goal,paths):
     q.put((Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]),0))    
     #q.put(Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]))
     
+    #Deepest amount of nodes expanded
+    counter = 0    
+    maxSize = len(room[0])*len(room)*100
+
     #Counter to do LIFO
     count = 1000000000000000000000000000
     current=None
     
-    while not q.empty():
+    while not q.empty() and counter <= maxSize:
         #current = q.get()
         current = q.get()[0]
+        counter += 1
         count-=1
         temp = None
         
@@ -115,7 +120,7 @@ def A_star(robot,room,goal,paths):
             visited[current.coord[0]].insert(temp,current.coord)
     
     #Return None if no path can be found
-    if q.empty() and not current.is_goal((goal[0],goal[1])):
+    if q.empty() and not current.is_goal((goal[0],goal[1])) or counter > maxSize:
         return None
     
     #Reonstruct the path in an array
