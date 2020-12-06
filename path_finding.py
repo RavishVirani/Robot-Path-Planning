@@ -38,7 +38,7 @@ def binary_search(item,array):
     return start
 
 def A_star(robot,room,goal,paths):
-    print("Current Robot is ",robot)
+    #print("Current Robot is ",robot)
     q = PriorityQueue()
     
     visited = []
@@ -50,6 +50,8 @@ def A_star(robot,room,goal,paths):
     #Add the first node of the algorithm
     q.put((Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]),0))    
     #q.put(Node(0,(robot[0],robot[1]),None,room[len(room)-robot[1]-1][robot[0]]))
+    
+    #Counter to do LIFO
     count = 1000000000000000000000000000
     current=None
     
@@ -127,14 +129,14 @@ def A_star(robot,room,goal,paths):
         for n in range(len(paths)):
             if i < len(paths[n]):
                 if current_path[i] == paths[n][i]:
-                    print("conflict at",current_path[i])
+                    #print("conflict at",current_path[i])
                     
                     #Remove conflict spot from the map temporarily
                     temp_index = (len(room)-current_path[i][1]-1,current_path[i][0])
                     temp_value = room[temp_index[0]][temp_index[1]]
                     room[temp_index[0]][temp_index[1]] = -1
 
-                    print()
+                    #print()
                     #Check for another path for the current robot
                     temp_current = A_star(robot,room,goal,paths)
                     if temp_current is None or len(temp_current)>len(current_path):
@@ -144,14 +146,14 @@ def A_star(robot,room,goal,paths):
                         
                         if temp_other is None or len(temp_other)>len(actual_path):
                             current_path.insert(i,current_path[i-1])
-                            print("No other satisfying paths. Just wait once")
+                            #print("No other satisfying paths. Just wait once")
                         else:
                             actual_path = temp_other
-                            print("Modify old path",temp_other)
+                            #print("Modify old path",temp_other)
                         paths.insert(n,actual_path)
 
                     else:
-                        print("Another current path found")
+                        #print("Another current path found")
                         current_path = temp_current
                         i=1
                         
