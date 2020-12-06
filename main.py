@@ -140,7 +140,11 @@ def main():
     goal = (goal[0],height - int(goal[1]) - 1)
     for i in range(len(rob)):
         rob[i] = (rob[i][0],height - rob[i][1] - 1)
-    output.drawBoard(height, width, arr, obstacleArr, goal, rob)
+    
+    if width > 50 or height > 50:
+        output.drawBigBoard(height,width,arr,goal,cost_map)
+    else:
+        output.drawBoard(height, width, arr, obstacleArr, goal, rob)
 
 # Run the main function
 main()
