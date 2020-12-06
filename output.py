@@ -43,19 +43,18 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
     # Initialize the image
     image = pygame.image.load(r'robot.jpg')
     image = pygame.transform.scale(image, (squareWidth, squareHeight))
-
+    
+    #Set the index bounds for the paths
     index = 0
     max_index = 0
-    pathed_robots = []
     for path in pathArr:
-        if path is None:
-            continue
-        pathed_robots.append(path[0])
         if len(path)>max_index:
             max_index = len(path)
-    for i in range(len(rob)):
-        if (rob[i][1],rob[i][0]) not in pathed_robots:
-            pathArr.append([(rob[i][1],rob[i][0])]*max_index)
+            
+    #If the robot has no paths, then make it "stay still"
+    for i in range(len(pathArr)):
+        if len(pathArr[i])==1 and pathArr[i][0]!=(goal[1],goal[0]):
+            pathArr[i] = pathArr[i]*max_index
     
     # Handler for when user exits the program
     while True: 
@@ -92,8 +91,6 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
         # Draw the paths for robots
         drawPath(boardHeight, boardWidth, pathArr, rectangles)
         for path in pathArr:
-            if path is None:
-                continue
             # If its a robot, draw the ROBOT            
             if len(path)>index:
                 i = path[index][1]
