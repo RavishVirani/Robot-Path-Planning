@@ -1,4 +1,12 @@
 # Robot-Path-Planning
+CP-468 Group 15 Term Project
+
+Matthew Nitsopoulos (170673880)<br/>
+Harkaran Grewal (170531870)<br/>
+Min-Ho Choi (170813020)<br/>
+Ravish Virani (173084290)<br/>
+Jungeun Choi (156803830)<br/>
+
 Consider a Museum room that is patrolled by N robots at night.  At a pre-determined time,  the robots are supposed to rendezvous at a given point R in the room.  The robots move inside the room, and the room contains obstacles,  such as chairs and benches for the visitors,  paintings,  sculptures etc.  The robots are supposed to know the locations of the obstacles in the room. Implement  an A*-based  algorithm  to  compute  the  path  of  each  robot,  from  its  initial  position  to  the  given rendezvous point R.
 
 ## Path Planning Algorithm
@@ -25,6 +33,28 @@ The output of the program displays multiple results.
 1. Pygame Window: The window created through pygame which displays the robots, room and the path taken by the robot to reach the destination.
 2. Console Output: i. Robot identified by its location and its path cost.
                    ii. The total cost of all paths.
+
+## How to run
+01. Install python and pygame onto the device.
+02. Clone this repository as a zip onto your machine.
+03. Unzip the file
+04. Create the input.txt file with the data.
+05. Locate the directory of the file in command prompt through 'cd' function. 
+06. Type "python main.py" to run the program through main.py file.
+07. The cmd will display the path costs, then the pygame window will open.
+08. Press the -> key on the keyboard to advance the robots.
+09. Press the <- key to reverse the robots in time.
+10. Shut the program by pressing "x" on the keyboard.<br/>
+<br/>
+**How to make input.txt**<br/>
+To change the input of the program please alter the text in the “input.txt” file<br/>
+The text in the input file must be in the following format<br/>
+- The first line must contain 2 numbers separated by a space, these represent the room dimensions (height by width)<br/>
+- The next line must contain 1 number which is the number of robots<br/>
+- The next n lines must contain 2 numbers separated by a space which indicate the robots positions. N is the number that was entered in ii.<br/>
+- The next line must contain 2 numbers separated by a space which represent the rendezvous point that the robots will meet at (if possible)<br/>
+- Lastly, the next n lines must contain x number of 1’s or 0’s where n is the first number entered in step i and x is the second number entered in step i. A 1 represents a space that is obstructed by an object and a 0 represents an open space.<br/>
+
 
 ## Sample Run
 **input.txt**
