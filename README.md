@@ -54,6 +54,6 @@ The output of the program displays multiple results.
 101111110111101000111110010<br/>
 101011101001001110100000100<br/>
 101111000010100000000100011<br/>
-<br/>
-![](Output_Img/output.jpg)
+
+![](Output_Img/output.JPG)
 <br/>
