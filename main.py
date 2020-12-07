@@ -1,6 +1,7 @@
 from Spot import Spot
 import output
 from path_finding import manhattan, A_star
+import time
 
 FILENAME = "input.txt"
 
@@ -74,7 +75,7 @@ def heuristic():
 def algorithm():
     pass
 
-def main():
+def main(start_time):
     f = open(FILENAME, "r")
     width, height, num_of_robots, robots, goal, obstacles = getInput(f)
     spots = getSpots(width, height, robots, obstacles, goal)
@@ -118,7 +119,8 @@ def main():
             #break
         else:        
             arr.append(path)
-            
+        
+       
     #Restate the paths for the draw method. Draw method takes (y,x) coordinates
     total = 0
     for i in range(len(arr)):
@@ -136,10 +138,12 @@ def main():
         arr[i] = temp
     print("The cost of all the paths is:",total)
     
+    print("Finished in {:0.4f} seconds".format(time.time()-start_time))
     #Restate the goal and robots. They are y-inverted.
     goal = (goal[0],height - int(goal[1]) - 1)
     for i in range(len(rob)):
         rob[i] = (rob[i][0],height - rob[i][1] - 1)
+    
     
     if width > 50 or height > 50:
         output.drawBigBoard(height,width,arr,goal,cost_map)
@@ -147,4 +151,5 @@ def main():
         output.drawBoard(height, width, arr, obstacleArr, goal, rob)
 
 # Run the main function
-main()
+start_time = time.time()
+main(start_time)
