@@ -45,7 +45,7 @@ The output of the program displays multiple results.
 08. Press the -> key on the keyboard to advance the robots.
 09. Press the <- key to reverse the robots in time.
 10. Shut the program by pressing "x" on the keyboard.<br/>
-<br/>
+
 **How to make input.txt**<br/>
 To change the input of the program please alter the text in the “input.txt” file<br/>
 The text in the input file must be in the following format<br/>
