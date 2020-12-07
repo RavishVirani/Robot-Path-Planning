@@ -14,32 +14,62 @@ HEIGHT = 512
 WIDTH = 512
 OFFSET = 5
 
+
 # Credit for robot image goes to:
 # "Designed by pch.vector / Freepik"
 
-def keyDown(key,index,max_length):
+def keyDown(key,index,max_length, autostep):
     if key == pygame.K_LEFT:
         if index>0:
             index = index-1
+        autostep = False
     elif key == pygame.K_RIGHT:
         if index<max_length-1:
             index = index + 1
-    return index
+        autostep = False
+    elif key == pygame.K_a:
+        if autostep == False:
+            autostep = True
+        else:
+            autostep = False
+    elif key == "auto":
+        if index<max_length-1:
+            index = index + 1
+        else:
+            autostep = False
+            print("Autostep Complete")
+        
+    return index, autostep
 
-def bigKeyDown(key,index,robot_index,max_length,num_robots):
+def bigKeyDown(key,index,robot_index,max_length,num_robots, autostep):
     if key == pygame.K_LEFT:
         if index > 0:
             index = index - 1
+        autostep = False
     elif key == pygame.K_RIGHT:
         if index < max_length-1:
             index = index + 1
+        autostep = False
     elif key == pygame.K_DOWN:
         if robot_index > 0:
             robot_index = robot_index - 1
     elif key == pygame.K_UP:
         if robot_index < num_robots - 1:
             robot_index = robot_index + 1
-    return index,robot_index
+    elif key == pygame.K_a:
+        if autostep == False:
+            autostep = True
+        else:
+            autostep = False
+    elif key == "auto":
+        if index<max_length-1:
+            index = index + 1
+        else:
+            autostep = False
+            print("Autostep Complete")
+        
+    
+    return index,robot_index, autostep
 
 
 def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
@@ -48,15 +78,19 @@ def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
     SCREEN = pygame.display.set_mode((HEIGHT, WIDTH))
     CLOCK = pygame.time.Clock()
     SCREEN.fill(BLACK)
-    offset = 20            
+    offset = 20   
 
 
     squareWidth = WIDTH // (offset*2)
     squareHeight = HEIGHT // (offset*2)
 
+    # Initialize custom event
+    autostepping = pygame.USEREVENT + 5
+
+    autostep = False
+
     image = pygame.image.load(r'robot.jpg')
     image = pygame.transform.scale(image, (squareWidth, squareHeight))
-
     
     robot_index = 0
     index = 0
@@ -71,8 +105,16 @@ def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
         if len(paths[i])==1 and paths[i][0]!=(goal[1],goal[0]):
             paths[i] = paths[i]*max_index
 
-    
 
+    # Set the delay for automoving
+    if boardHeight > 250 and boardWidth > 250:
+        pause = 150
+    elif boardHeight > 500 and boardWidth > 500:
+        pause = 100
+    else:
+        pause = 250
+    
+    pygame.time.set_timer(autostepping, pause)
 
     while True: 
         for event in pygame.event.get():
@@ -81,7 +123,10 @@ def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
                 print("Exiting Output")
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                index, robot_index=bigKeyDown(event.key,index,robot_index,max_index,num_bots)
+                index, robot_index, autostep = bigKeyDown(event.key,index,robot_index,max_index,num_bots, autostep)
+            elif event.type == autostepping and autostep == True:
+                index, robot_index, autostep = bigKeyDown("auto",index,robot_index,max_index,num_bots, autostep)
+
         if len(paths[robot_index])<=index:
             x = goal[0]
             y = goal[1]
@@ -117,6 +162,7 @@ def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
                     #print("blank")
                     pygame.draw.rect(SCREEN, BLACK, rect)                    
                     pygame.draw.rect(SCREEN, WHITE, rect, 1)
+
         #Other bots
         for i in range(len(paths)):
             if i == robot_index or len(paths[i])<=index:
@@ -135,8 +181,11 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
     CLOCK = pygame.time.Clock()
     SCREEN.fill(BLACK)
 
+    
+    # Initialize custom event
+    autostepping = pygame.USEREVENT + 5
+
     rectangles = []
-    #print(obsticalArr)
 
     # Get the size of each square
     squareWidth = WIDTH // boardWidth
@@ -147,6 +196,7 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
     image = pygame.transform.scale(image, (squareWidth, squareHeight))
     
     #Set the index bounds for the paths
+    autostep = False
     index = 0
     max_index = 0
     for path in pathArr:
@@ -158,6 +208,15 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
         if len(pathArr[i])==1 and pathArr[i][0]!=(goal[1],goal[0]):
             pathArr[i] = pathArr[i]*max_index
     
+    # Set the delay for automoving
+    if boardHeight > 50 and boardWidth > 50:
+        pause = 200
+    elif boardHeight > 100 and boardWidth > 100:
+        pause = 100
+    else:
+        pause = 500
+    pygame.time.set_timer(autostepping, pause)
+
     # Handler for when user exits the program
     while True: 
         for event in pygame.event.get():
@@ -166,10 +225,13 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
                 print("Exiting Output")
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                index = keyDown(event.key,index,max_index)
+                index, autostep = keyDown(event.key,index,max_index, autostep)
+            elif event.type == autostepping and autostep == True:
+                index, autostep = keyDown("auto",index,max_index, autostep)
+            
         rectangles = []
 
-
+        
         # Draw all the squares
         for i in range(boardWidth):
             for j in range(boardHeight):
@@ -232,7 +294,3 @@ def drawPath(boardHeight, boardWidth, pathArr, rectangles):
                 pygame.draw.line(SCREEN, colour, last, mid, 5)
                 last = mid
         cnt+=1
-
-            
-
-
