@@ -206,12 +206,7 @@ def drawBoard(boardHeight, boardWidth, pathArr, obsticalArr, goal, rob):
             pathArr[i] = pathArr[i]*max_index
     
     # Set the delay for automoving
-    if boardHeight > 50 and boardWidth > 50:
-        pause = 200
-    elif boardHeight > 100 and boardWidth > 100:
-        pause = 100
-    else:
-        pause = 500
+    pause = 200
     pygame.time.set_timer(autostepping, pause)
 
     # Handler for when user exits the program
