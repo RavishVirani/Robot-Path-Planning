@@ -10,6 +10,7 @@ RED = (255,0,0)
 GOLD = (163, 128, 31)
 TURQOISE = (6, 209, 155)
 PURPLE = (168, 6, 209)
+DARKPURPLE = (50,0,100)
 HEIGHT = 512
 WIDTH = 512
 OFFSET = 5
@@ -107,12 +108,12 @@ def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
 
 
     # Set the delay for automoving
-    if boardHeight > 250 and boardWidth > 250:
+    if boardHeight < 250 and boardWidth < 250:
         pause = 150
-    elif boardHeight > 500 and boardWidth > 500:
+    elif boardHeight < 500 and boardWidth < 500:
         pause = 100
     else:
-        pause = 250
+        pause = 20
     
     pygame.time.set_timer(autostepping, pause)
 
@@ -141,27 +142,23 @@ def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
                 if i == 0  and n == 0:
                     #print("robot")
                     SCREEN.blit(image, (offset*squareWidth, offset*squareHeight))                
-                elif y+i<0 or y+i>=boardHeight:
-                    pygame.draw.rect(SCREEN, WHITE, rect)
+                elif y+i<0 or y+i>=boardHeight or x+n<0 or x+n>=boardWidth:
+                    pygame.draw.rect(SCREEN, WHITE, rect)                    
+                    #print("y axis balck and x axis black")
                     
-                    #print("y axis balck")
-                elif x+n<0 or x+n>=boardWidth:
-                    pygame.draw.rect(SCREEN, WHITE, rect)
-                    
-                    #print("x axis black")
                 elif board[y+i][x+n]==-1:
                     pygame.draw.rect(SCREEN, RED, rect)
-                    pygame.draw.rect(SCREEN, WHITE, rect, 1)
+                    pygame.draw.rect(SCREEN, DARKPURPLE, rect, 1)
 
                     #print("obstacle")
                 elif board[y+i][x+n]==0:
                     #print("goal")
                     pygame.draw.rect(SCREEN, GOLD, rect)
-                    pygame.draw.rect(SCREEN, WHITE, rect, 1)                
+                    pygame.draw.rect(SCREEN, DARKPURPLE, rect, 1)
                 else:
                     #print("blank")
                     pygame.draw.rect(SCREEN, BLACK, rect)                    
-                    pygame.draw.rect(SCREEN, WHITE, rect, 1)
+                    pygame.draw.rect(SCREEN, DARKPURPLE, rect, 1)
 
         #Other bots
         for i in range(len(paths)):
