@@ -109,9 +109,9 @@ def drawBigBoard(boardHeight,boardWidth,paths,goal,board):
 
     # Set the delay for automoving
     if boardHeight < 250 and boardWidth < 250:
-        pause = 150
-    elif boardHeight < 500 and boardWidth < 500:
         pause = 100
+    elif boardHeight < 500 and boardWidth < 500:
+        pause = 50
     else:
         pause = 20
     
